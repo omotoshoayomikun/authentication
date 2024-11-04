@@ -1,0 +1,16 @@
+.dashboard_card {
+    padding: 15px 30px 30px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    -webkit-box-shadow: 0px 10px 20px 0px rgba(229, 229, 229, 0.75);
+    box-shadow: 0px 10px 20px 0px rgba(229, 229, 229, 0.75); 
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .125);
+    border-radius: .25rem;
+    word-wrap: break-word;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(204px, 1fr)); 
+    gap: 40px;
+    row-gap: 30px;
+}
