@@ -1,10 +1,11 @@
 "use client";
 import { OutlineCard } from "@/components/Form/Card";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { CiChat1, CiMail, CiUnlock } from "react-icons/ci";
 
 const Page = () => {
+  const params = useParams();
   const InputStyles = {
     padding: "5px",
     height: "60px",
@@ -12,7 +13,7 @@ const Page = () => {
     "text-align": "center",
     "font-weight": "bold",
   };
-  const userId = "66e837074721419700244bcc";
+  const userId = params.id;
   const router = useRouter();
 
   const handleSend = () => {

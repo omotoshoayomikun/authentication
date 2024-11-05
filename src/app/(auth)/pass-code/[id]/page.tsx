@@ -229,7 +229,7 @@ const Page = () => {
             />
           </div>
           <div className="flex justify-center mt-2 text-[--anchor-text-color] cursor-pointer">
-            <Link href="/pass-option">Login using another means</Link>
+            <Link href={`/pass-option/${params.id}`}>Login using another means</Link>
           </div>
         </div>
       </div>

@@ -9,8 +9,8 @@ function Navbar() {
           <h5 className='font-bold text-[15px] leading-3'>OMOTOSHO JAMES AYOMIKUN</h5>
           <span className='text-[13px] text-[#646464]'>Student</span>
         </div>
-        <div className="w-[40px] h-[40px] relative">
-          <Image src='/images/CSHNDF223411.jpg' alt='image' fill={true} className='rounded-[50%]' />
+        <div className="w-[40px] h-[40px] relative rounded-[50%] bg-gray-500">
+          {/* <Image src='/images/CSHNDF223411.jpg' alt='image' fill={true} className='rounded-[50%]' /> */}
         </div>
       </div>
     </div>
