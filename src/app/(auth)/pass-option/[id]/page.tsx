@@ -64,13 +64,13 @@ const Page = () => {
               }
               icon={<CiChat1 size={25} />}
             />
-            <OutlineCard
+            {/* <OutlineCard
               text="Secret questions"
               handOutlineCard={(e: React.MouseEvent<HTMLDivElement>) =>
                 handOption(e, "secret")
               }
               icon={<CiUnlock size={25} />}
-            />
+            /> */}
           </div>
         </div>
       </div>
