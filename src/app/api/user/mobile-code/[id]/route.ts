@@ -50,7 +50,7 @@ export const GET = async (
         }
     }
 
-    phone.length == 11 ? phone_number = `+234${phone.slice(1, )}` : phone_number = `+234${phone}`
+    phone.length == 11 ? phone_number = `+234${phone.slice(1, )}` : phone_number = `+234${phone}` 
 
    await createMessage(phone_number)
    return NextResponse.json({ message: "Phone Number sent successfully!!!" }, { status: 200 });
