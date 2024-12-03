@@ -9,12 +9,16 @@ import geoip from 'geoip-lite';
 // }
 
 
+const generateMatric_noCode = () => Math.floor(1000 + Math.random() * 9000);
+
 export async function POST(request: NextRequest) {
 
 
   try {
     await connectDb();
-    const { password, email, matric_no, firstname, lastname, middlename, phone } = await request.json();
+    const { password, email, firstname, lastname, middlename, phone, department, year, program, type } = await request.json();
+
+    const matric_no = `${department}/${program}/${type}${year}/${generateMatric_noCode()}`
 
     const body = {
       email: email,
@@ -25,6 +29,15 @@ export async function POST(request: NextRequest) {
       phone: phone,
     }
 
+    const getMatric_no = await User.findOne({matric_no: matric_no})
+    if(getMatric_no) return NextResponse.json({ message: "Matric No already exist!!!" },  { status: 401 })
+
+    const getPhone = await User.findOne({phone: phone})
+    if(getPhone) return NextResponse.json({ message: "Phone Number already exist!!!" },  { status: 402 })
+
+    const getEmail = await User.findOne({email: email})
+    if(getEmail) return NextResponse.json({ message: "Email already exist!!!" },  { status: 403 })
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password.toUpperCase(), saltRounds);
     const newUser = new User({
@@ -32,7 +45,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
     });
     await newUser.save();
-    return NextResponse.json({ message: "New user saved successfully" }, { status: 200});
+    return NextResponse.json({ message: "New user saved successfully", data: {matric_no: matric_no} }, { status: 200});
 
   } catch (err:any) {
     console.log(err);

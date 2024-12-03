@@ -63,24 +63,15 @@ export const POST = async (request: NextRequest) => {
 
             await userOtp.save();
           }
-
           const userId = user[0]._id.toString();
 
           await transporter.sendMail(mailOptions);
-         await createSession(userId, "session_alt");
-        //  return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASEURL}pass-code/${user[0]._id}`)
-          // const expiresDate = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000)
-          // const session_alt = bcrypt.hash();
-          // cookies().set("session_alt", user[0]._id, { httpOnly: true, secure: true, priority: "high", sameSite: "lax"});
-          // redirect(`pass-code/${user[0]._id}`)
           return NextResponse.json({ message: "Email sent successfully", data: {user_id: user[0]._id} }, {status: 200})
-          // .cookies("session_alt", session_alt, {httpOnly: true, expires: expiresDate, secure: true, priority: "high", sameSite: "lax"});
         } catch (err: any) {
           console.log(err.message);
           return NextResponse.json({ message: err.message }, {status: 400});
         }
 
-        // redirect(`${process.env.NEXT_PUBLIC_BASEURL}/pass-code/${user[0]._id}`);
       } else {
         return NextResponse.json({ message: "Incorrect password" }, {status: 400});
       }

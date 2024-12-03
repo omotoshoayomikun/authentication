@@ -4,13 +4,42 @@ import { Button1 } from "@/components/Form/Button";
 import Input from "@/components/Form/Input";
 import { IInput } from "@/util/type";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { RiMessage2Fill } from "react-icons/ri";
+import { GetApi, VerityPostApi } from "../../../../../lib/Action";
+import { CgSpinner } from "react-icons/cg";
+import { toast } from "react-toastify";
+import { ToastOption } from "../../../../../lib/Data";
 // import styles from "./Form.module.css";
 
+
+const Inputs = [
+  {
+    id: 1,
+    maxLenght: 1,
+    name: "first",
+  },
+  {
+    id: 2,
+    maxLenght: 1,
+    name: "second",
+  },
+  {
+    id: 3,
+    maxLenght: 1,
+    name: "third",
+  },
+  {
+    id: 4,
+    maxLenght: 1,
+    name: "fourth",
+  },
+];
+
 const Page = () => {
-  const InputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const params = useParams();
+  const InputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const [value, setValue] = useState({
     first: "",
@@ -18,39 +47,13 @@ const Page = () => {
     third: "",
     fourth: "",
   });
-
-  const handleVerify = () => {
-    // router.push("/dashboard");
-  };
-
-  const Inputs = [
-    {
-      id: 1,
-      maxLenght: 1,
-      name: "first",
-    },
-    {
-      id: 2,
-      maxLenght: 1,
-      name: "second",
-    },
-    {
-      id: 3,
-      maxLenght: 1,
-      name: "third",
-    },
-    {
-      id: 4,
-      maxLenght: 1,
-      name: "fourth",
-    },
-  ];
-  // Initialize the ref array to match the length of Values
-  // useEffect(() => {
-  //   InputRefs.current = InputRefs.current.slice(0, Inputs.length);
-  // }, [Inputs.length]);
-
-  
+  const [loading, setLoading] = useState({
+    verify: false,
+    resend: false,
+  });
+  const [error, setError] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
+    
   const [time, setTime] = useState(300);
   useEffect(() => {
     if (time === 0) return;
@@ -67,6 +70,7 @@ const Page = () => {
     const seconds = time % 60;
     return `${minutes}m:${seconds}s`;
   };
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -95,9 +99,85 @@ const Page = () => {
     }
   };
 
-  const handleResendOtp = () => {
+  
+  const handleResendOtp = async () => {
 
-  }
+    try {
+      setLoading({ ...loading, resend: true });
+      const response = await GetApi(`api/user/mobile-code/${params.id}`);
+      if (response.success) {
+        setTime(300);
+        // updateTimer(300);
+        setLoading({ ...loading, resend: false });
+      }
+    } catch (err: any) {
+      console.log(err.message);
+      toast.error(err.message, ToastOption);
+      setLoading({ ...loading, resend: false });
+    }
+  };
+
+  const handleVerify = async () => {
+    let hasError = false;
+    InputRefs.current.forEach((input, index) => {
+      if (input && input.value.trim() === "") {
+        input.style.borderColor = "red";
+        hasError = true;
+      } else if (input) {
+        input.style.borderColor = "#007bff";
+      }
+    });
+
+    if (hasError) {
+      setError(true);
+      return;
+    }
+
+    const code = `${value.first}${value.second}${value.third}${value.fourth}`;
+    console.log(code);
+    if (
+      value.first !== "" &&
+      value.second &&
+      value.third !== "" &&
+      value.fourth !== ""
+    ) {
+
+
+      
+    
+    try {
+      setLoading({ ...loading, verify: true });
+      setErrMsg("");
+      const response = await VerityPostApi(`api/user/verify-otp/${params.id}`, {code: code});
+      if (response.success) {
+        setLoading({ ...loading, verify: false });
+        router.replace("/dashboard");
+
+      } else {
+        InputRefs.current.forEach((input, index) => {
+          if (input) {
+            input.style.borderColor = "red";
+          }
+        });
+
+
+      setErrMsg(response.message);
+      }
+    } catch (err:any) {
+        InputRefs.current.forEach((input, index) => {
+          if (input) {
+            input.style.borderColor = "red";
+          }
+        });
+
+
+      setErrMsg(err.message);
+    } finally {
+      setLoading({ ...loading, verify: false });
+    }
+
+    }
+  };
 
   return (
     <>
@@ -130,15 +210,22 @@ const Page = () => {
               </div>
             ))}
           </div>
+          <div className="text-center font-bold mt-2 text-red-700">
+            {errMsg}
+          </div>
           <div className="mt-2">
-            <div className="text-[13px] text-center  text-[--side-text-color]">
+          <div className="text-[13px] text-center flex justify-center items-center text-[--side-text-color]">
               Didn&apos;t get the code?{" "}
-              <span
-                className="underline text-[--anchor-text-color] cursor-pointer"
-                onClick={handleResendOtp}
-              >
-                Click to send
-              </span>
+              {loading.resend ? (
+                <CgSpinner size={20} className="animate-spin ml-2" />
+              ) : (
+                <span
+                  className="underline text-[--anchor-text-color] cursor-pointer ml-2"
+                  onClick={handleResendOtp}
+                >
+                  Click to send
+                </span>
+              )}
             </div>
           </div>
           <div className="flex justify-center">
@@ -146,6 +233,7 @@ const Page = () => {
               title="Verify"
               handleClick={handleVerify}
               styles={{ width: "max-content", paddingInline: "40px" }}
+              disabled={loading.verify}
             />
           </div>
           <div className="flex justify-center mt-2 text-[--anchor-text-color] cursor-pointer">

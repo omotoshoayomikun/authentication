@@ -3,6 +3,7 @@ import styles from "./Form.module.css";
 import { IOutlineCard } from "@/util/type";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BsArrowRightCircle } from "react-icons/bs";
+import { CgSpinner } from "react-icons/cg";
 
 export const Card = ({ title }: { title: string }) => {
   return (
@@ -20,7 +21,10 @@ export const OutlineCard = (props: IOutlineCard) => {
     <>
       <div className={`${styles.outlinecard}`} onClick={props.handOutlineCard}>
         <h4 className="">{props.text}</h4>
-        <div className="">{props.icon}</div>
+        {
+          props.loading ? <CgSpinner size={25} className="animate-spin" /> : <div className="">{props.icon}</div>
+        }
+        
       </div>
     </>
   );

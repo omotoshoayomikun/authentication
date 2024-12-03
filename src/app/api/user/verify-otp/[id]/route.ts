@@ -13,23 +13,21 @@ import bcrypt from "bcrypt"
         const  { code } = await request.json();
 
         const user = await UserOtpVerification.findById(id);
+        if(!user) return NextResponse.json({ message: "OTP expired, Please Resend!!!" }, {status: 400});
         const hashedCode = user.code;
-        if(user) {
-            const compareCode = await bcrypt.compare(code, hashedCode);
-            if(compareCode) {
-                return NextResponse.json({ message: "OTP Verification Successful" }, {status: 200});
-            } else {
-                return NextResponse.json({ message: "Wrong OTP" }, {status: 400});
-            }
+        const compareCode = await bcrypt.compare(code, hashedCode);
+        if(compareCode) {
+            return NextResponse.json({ message: "OTP Verification Successful" }, {status: 200});
         } else {
-            console.log({message: "OTP expired, Please Resend!!!"})
-            return NextResponse.json({ message: "OTP expired, Please Resend!!!" }, {status: 400});
+            return NextResponse.json({ message: "Wrong OTP" }, {status: 400});
         }
+
+            
         
 
     } catch (err: any) {
         console.log(err.message)
-        return NextResponse.json({ message: "An Error occure, please check your internet" });
+        return NextResponse.json({ message: "An Error occure, please check your internet and referesh" }, {status: 405});
     }
 
 }

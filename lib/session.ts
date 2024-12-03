@@ -32,7 +32,7 @@ export async function decrypt(session: any) {
 
 export const createSession = async (userId: any, role: any) => {
   const expires = new Date(Date.now() + cookie.duration);
-  const session = await encrypt({ userId, role });
+  const session = await encrypt({ userId: userId, stage: role });
 
   cookies().set(cookie.name, session, {
     httpOnly: true,
@@ -44,23 +44,19 @@ export const createSession = async (userId: any, role: any) => {
   // redirect(`pass-code/${userId}`)
 };
 
-export const verifyLoginSession = async () => {
-  const cookie = cookies().get(cookies.name)?.value;
-  const session = await decrypt(cookie);
-
-  if (!session?.userId) {
-    redirect("/login");
+export const verifyToken = async (request:any) => {
+  const accessCookie =  request.cookies.get(cookie.name);
+  if(!accessCookie) {
+   return null;
   }
 
-  if (session?.userId && session?.role == "session_alt") {
-    
-    // return { userId: session?.userId };
-    // return true
-    NextResponse.next();
-  } else {
-    redirect("/login");
+  const token = await decrypt(accessCookie.value);
+  if(!token) {
+   return null;
   }
-};
+  return token;
+ 
+}
 
 // export const deleteSession = async () => {
 //     cookies().delete(cookie.name);

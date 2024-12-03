@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { MdMarkEmailRead } from "react-icons/md";
 import { CgSpinner } from "react-icons/cg";
+import { GetApi, VerityPostApi } from "../../../../../lib/Action";
 // import styles from "./Form.module.css";
 
 const Inputs = [
@@ -67,6 +68,14 @@ const Page = () => {
     return `${minutes}m:${seconds}s`;
   };
 
+  const updateTimer = (tyme:number) => {
+    // if (time === 0) return;
+    setInterval(() => {
+      setTime(tyme - 1);
+    }, 1000);
+
+  }
+
   const [code, setCode] = useState(``);
 
   const handleChange = (
@@ -98,13 +107,15 @@ const Page = () => {
   };
 
   const handleResendOtp = async () => {
+
     try {
       setLoading({ ...loading, resend: true });
-      await fetch(
-        `${process.env.NEXT_PUBLIC_BASEURL}/api/user/resend-otp/${params.id}`
-      );
-      setTime(300);
-      setLoading({ ...loading, resend: false });
+      const response = await GetApi(`api/user/resend-otp/${params.id}`);
+      if (response.success) {
+        setTime(300);
+        // updateTimer(300);
+        setLoading({ ...loading, resend: false });
+      }
     } catch (err: any) {
       console.log(err.message);
       setLoading({ ...loading, resend: false });
@@ -135,39 +146,41 @@ const Page = () => {
       value.third !== "" &&
       value.fourth !== ""
     ) {
-      try {
-        setErrMsg("");
-        setLoading({ ...loading, verify: true });
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BASEURL}/api/user/verify-otp/${params.id}`,
-          {
-            method: "POST",
-            body: JSON.stringify({ code: code }),
-          }
-        );
-        const data = await res.json();
-        if (res.ok) {
-          router.replace("/dashboard");
-          setLoading({ ...loading, verify: false });
-        } else {
-          if (
-            data.message === "Wrong OTP" ||
-            data.message === "OTP expired, Please Resend!!!"
-          ) {
-            InputRefs.current.forEach((input, index) => {
-              if (input) {
-                input.style.borderColor = "red";
-              }
-            });
-          }
 
-          setErrMsg(data.message);
-          setLoading({ ...loading, verify: false });
-        }
-      } catch (err: any) {
-        console.log(err.message);
+
+      
+    
+    try {
+      setLoading({ ...loading, verify: true });
+      setErrMsg("");
+      const response = await VerityPostApi(`api/user/verify-otp/${params.id}`, {code: code});
+      if (response.success) {
         setLoading({ ...loading, verify: false });
+        router.replace("/dashboard");
+
+      } else {
+        InputRefs.current.forEach((input, index) => {
+          if (input) {
+            input.style.borderColor = "red";
+          }
+        });
+
+
+      setErrMsg(response.message);
       }
+    } catch (err:any) {
+        InputRefs.current.forEach((input, index) => {
+          if (input) {
+            input.style.borderColor = "red";
+          }
+        });
+
+
+      setErrMsg(err.message);
+    } finally {
+      setLoading({ ...loading, verify: false });
+    }
+
     }
   };
 
@@ -229,7 +242,9 @@ const Page = () => {
             />
           </div>
           <div className="flex justify-center mt-2 text-[--anchor-text-color] cursor-pointer">
-            <Link href={`/pass-option/${params.id}`}>Login using another means</Link>
+            <Link href={`/pass-option/${params.id}`}>
+              Login using another means
+            </Link>
           </div>
         </div>
       </div>

@@ -11,6 +11,7 @@ export const Button1 = (props: IButtonProp) => {
       style={props.styles}
       onClick={props.handleClick}
       disabled={props.disabled && true}
+      type={props.type? props.type : "button"}
     >
       {props.disabled ? (
         <CgSpinner size={25} className="animate-spin" />

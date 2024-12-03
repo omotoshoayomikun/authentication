@@ -9,7 +9,8 @@ export interface IButtonProp {
   title: string;
   styles?: object;
   disabled?: boolean,
-  handleClick: () => void;
+  type?: "button" | "reset" | "submit" | undefined;
+  handleClick?: (e?: any) => void;
 }
 
 export interface IInput {
@@ -28,6 +29,7 @@ export interface IInput {
 export type IOutlineCard = {
   text: string;
   icon: any;
+  loading?: any;
   handOutlineCard?: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 

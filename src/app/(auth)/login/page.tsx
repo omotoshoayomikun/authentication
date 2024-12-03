@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button1 } from "@/components/Form/Button";
 import { useRouter } from "next/navigation";
 import { CgSpinner } from "react-icons/cg";
+import { loginApi } from "../../../../lib/Action";
 
 function Page() {
   const router = useRouter();
@@ -62,30 +63,18 @@ function Page() {
     }
 
     try {
-      setErrMsg("");
       setLoading({ ...loading, login: true });
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASEURL}/api/user/login`,
-        {
-          method: "POST",
-          body: JSON.stringify(value),
-        }
-      );
-
-      const data = await res.json();
-      console.log(data)
-      if(res.ok) {
-        router.push(`pass-code/${data.data.user_id}`);
-        setLoading({ ...loading, login: false });
+      const response = await loginApi(`api/user/login`, value);
+      if (response.success) {
+        setErrMsg("");
+        router.push(`pass-code/${response.data.user_id}`);
       } else {
-        setLoading({ ...loading, login: false });
-        setErrMsg(data.message);
+        setErrMsg(response.message);
       }
-
-    } catch (err: any) {
-      console.log(err.message);
+    } catch (err:any) {
+      setErrMsg(err.message);
+    } finally {
       setLoading({ ...loading, login: false });
-      setErrMsg("An Error occurred. Resend!!!");
     }
   };
 

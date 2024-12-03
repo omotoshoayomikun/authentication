@@ -17,6 +17,7 @@ export const GET = async (
     const code = generateCode();
 
     const user = await User.findById(id);
+    if(!user) return NextResponse.json({ message: "Invalid User!!!" }, {status: 400});
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
