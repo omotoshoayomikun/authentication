@@ -6,7 +6,7 @@ export async function middleware (request: NextRequest) {
 
     const session = await verifyToken(request);
     if (!session) return NextResponse.redirect(new URL("/", request.url));
-        NextRequest.user = session;
+        // NextRequest.user = session;
 
         if(pathname === `/pass-code/${session.userId}` || pathname === `/pass-option/${session.userId}`) {
             if(session.stage !== "stage1") return NextResponse.redirect(new URL("/", request.url));
