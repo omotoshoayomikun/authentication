@@ -124,7 +124,8 @@ function Page() {
               <Button1
                 title={`Login`}
                 handleClick={handlLogin}
-                disabled={loading.login}
+                disabled={loading}
+
               />
             </div>
             <div className="ml-auto mr-auto w-[max-content] mt-2">
