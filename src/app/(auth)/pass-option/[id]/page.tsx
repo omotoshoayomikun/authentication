@@ -66,6 +66,7 @@ const Page = () => {
           toast.error(response.message, ToastOption);
         }
       } catch (err: any) {
+        console.log(err)
         toast.error(err.message, ToastOption);
         setErrMsg(err.message);
       } finally {
