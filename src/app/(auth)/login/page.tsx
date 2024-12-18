@@ -124,7 +124,7 @@ function Page() {
               <Button1
                 title={`Login`}
                 handleClick={handlLogin}
-                disabled={loading}
+                disabled={loading.login}
 
               />
             </div>
